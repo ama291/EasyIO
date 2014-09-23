@@ -45,17 +45,22 @@ function lex(code) {
 			}
 		}
 		else if (char === "+" || char === "-") {
-			if (tok === "") {
-				tok += char;
-				codebytes.push(tok);
-				tok = "";
+			if (state === false) {
+				if (tok === "") {
+					tok += char;
+					codebytes.push(tok);
+					tok = "";
+				}
+				else {
+					codebytes.push(tok);
+					tok = "";
+					tok += char;
+					codebytes.push(tok);
+					tok = "";
+				}
 			}
 			else {
-				codebytes.push(tok);
-				tok = "";
 				tok += char;
-				codebytes.push(tok);
-				tok = "";
 			}
 		}
 		else {
