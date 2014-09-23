@@ -85,15 +85,21 @@ function typecheck(codebytes) {
 				errorlist.push("operatorfail");
 				passed = false;
 			}
-			if (!checkNum(term2) && !checkString(term2)) {
+			else if (!checkNum(term2) && !checkString(term2)) {
 				errorlist.push("operatorfail");
 				passed = false;
 			}
 		}
 		else if (byte === "print") {
 			i += 1;
-			var sbyte = codebytes[i];
-			if (checkNum(sbyte) === false && checkString(sbyte) === false) {
+			if (codebytes[i]) {
+				var sbyte = codebytes[i];
+				if (checkNum(sbyte) === false && checkString(sbyte) === false) {
+					errorlist.push("printfail");
+					passed = false;
+				}
+			}
+			else {
 				errorlist.push("printfail");
 				passed = false;
 			}
@@ -155,16 +161,17 @@ function parse(codebytes) {
 function errorhandle(errorlist) {
 	if (errorlist.length > 0) {
 		consoleClear();
+		iconsole.style.color = "red";
 		for (var i=0; i<errorlist.length; i++) {
 			var error = errorlist[i];
 			if (error === "parsefail") {
 				consolePrint("Parsing Failed: invalid command.");
 			}
 			else if (error === "operatorfail") {
-				consolePrint("TypeCheck Failed: you can only add/subtract variables");
+				consolePrint("TypeCheck Failed: you can only add/subtract variables.");
 			}
 			else if (error === "printfail") {
-				consolePrint("TypeCheck Failed: you can only print variables");
+				consolePrint("TypeCheck Failed: you can only print variables.");
 			}
 		}
 	}
