@@ -1,7 +1,9 @@
 //define some global stuff
 var code = ""; //code that goes in
-var compiledcode = ""; //code that comes out
+var compiledcode = "//Compiled into Javascript by EasyIO"; //code that comes out
 var codebytes = []; //stores "bytes" of code, a list of the tokens
+var errorlist = [];
+
 function checkString(variable) { //define a string
 	var passed = false;
 	if (variable.charAt(0) === "\"" && variable.charAt(variable.length-1) === "\"") {
@@ -75,17 +77,19 @@ function typecheck(codebytes) {
 			var term1 = codebytes[i-1];
 			var term2 = codebytes[i+1];
 			if (!checkNum(term1) && !checkString(term1)) {
-				if (!checkNum(term2) && !checkString(term2)) {
-					consolePrint("You can only add/subtract variables.");
-					passed = false;
-				}
+				errorlist.push("operatorfail");
+				passed = false;
+			}
+			if (!checkNum(term2) && !checkString(term2)) {
+				errorlist.push("operatorfail");
+				passed = false;
 			}
 		}
 		else if (byte === "print") {
 			i += 1;
 			var sbyte = codebytes[i];
 			if (checkNum(sbyte) === false && checkString(sbyte) === false) {
-				consolePrint("You can only print variables.");
+				errorlist.push("printfail");
 				passed = false;
 			}
 		}
@@ -113,11 +117,13 @@ function solve(codebytes) {
 		var byte = codebytes[i];
 		if (byte === "+") {
 			codebytes[i-1] += codebytes[i+1];
-			codebytes.splice(i,i+2);
+			codebytes.splice(i,i);
+			i -= 1;
 		}
 		else if (byte === "-") {
 			codebytes[i-1] -= codebytes[i+1];
-			codebytes.splice(i,i+2);
+			codebytes.splice(i,i);
+			i -= 1;
 		}
 	}
 }
@@ -126,24 +132,44 @@ function parse(codebytes) {
 	for (var i=0; i<codebytes.length; i++) {
 		var byte = codebytes[i];
 		if (byte === "print") {
+			compiledcode += "\n"
 			compiledcode += "consolePrint(\"";
 			i += 1;
 			var sbyte = codebytes[i];
 			compiledcode += sbyte + "\");";
 		}
 		else {
-			consolePrint("Invalid Command: " + byte);
+			errorlist.push("parsefail");
 			i = codebytes.length;
 			passed = false;
 		}
 	}
 }
 
+//handle errors
+function errorhandle(errorlist) {
+	if (errorlist.length > 0) {
+		consoleClear();
+		for (var i=0; i<errorlist.length; i++) {
+			var error = errorlist[i];
+			if (error === "parsefail") {
+				consolePrint("Parsing Failed: invalid command.");
+			}
+			else if (error === "operatorfail") {
+				consolePrint("TypeCheck Failed: you can only add/subtract variables");
+			}
+			else if (error === "printfail") {
+				consolePrint("TypeCheck Failed: you can only print variables");
+			}
+		}
+	}
+}
 //reset global variables
 function reset() {
 	code = "";
 	compiledcode = "";
 	codebytes = [];
+	errorlist = [];
 }
 
 //run the lexer, typechecker, parser
@@ -151,10 +177,24 @@ function compile(code) {
 	consoleClear();
 	reset();
 	lex(code);
-	//if the typechecker passes convert variables and parse code bytes
-	if (typecheck(codebytes)) {
+	if (errorlist.length === 0) {
+		progressbar.value = 15;
+		typecheck(codebytes);
+	}
+	if (errorlist.length === 0) {
+		progressbar.value = 30;
 		convert(codebytes);
+	}
+	if (errorlist.length === 0) {
+		progressbar.value = 45;
 		solve(codebytes);
+	}
+	if (errorlist.length === 0) {
+		progressbar.value = 60;
 		parse(codebytes);
 	}
+	if (errorlist.length === 0) {
+		progressbar.value = 100;
+	}
+	errorhandle(errorlist);
 }

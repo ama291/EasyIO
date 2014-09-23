@@ -37,8 +37,9 @@
 			progressbar.value = 0;
 			code = editor.value;
 			compile(code);
-			progressbar.value = 100;
-			eval(compiledcode);
+			if (errorlist.length === 0) {
+				eval(compiledcode);
+			}
 		}
 		function consolePrint(data) {
 			if (line === 1) {
