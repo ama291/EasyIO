@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>EasyIO IDE</title>
+		<script src="compiler.js"></script>
+	<body>
+		<center>
+			Progress: <progress value="0" max="100" id="progress"></progress>
+			<input type="submit" value="Run" onclick="run()" align="right" />
+			<br>
+			<textarea cols="60" rows="25" id="editor"></textarea>
+			<textarea readonly cols="60" rows="25" id="console"></textarea>
+		</center>
+		<br>
+		<h2>Documentation:</h2>
+		<h3>Types:</h3>
+		<h4>string</h4>
+		<p>A string is a combination of characters surrounded by quotes. EX: "hello"</p>
+		<h4>integer</h4>
+		<p>An integer is a whole number. Numbers with decimals are always rounded down. EX: 3</p>
+		<h3>Operators:</h3>
+		<h4>+</h4>
+		<p>Adds two variables. You can only add strings and numbers. EX: 2+2</p>
+		<h4>-</h4>
+		<p>Subtracts two variables. You can only subtract numbers. EX: 5-4</p>
+		<h3>Commands:</h3>
+		<h4>print</h4>
+		<p>Prints the following variable. You can only print strings and numbers. EX: print "hello"</p>
+		</body>
+	<script>
+		var progressbar = document.getElementById("progress");
+		var iconsole = document.getElementById("console");
+		var editor = document.getElementById("editor");
+		var newl = "\n"
+		var line = 1;
+		function run() {
+			progressbar.value = 0;
+			code = editor.value;
+			compile(code);
+			progressbar.value = 100;
+			eval(compiledcode);
+		}
+		function consolePrint(data) {
+			if (line === 1) {
+				data = "> " + data;
+				iconsole.value += data;
+				line += 1;
+			}
+			else {
+				data = "\n> " + data;
+				iconsole.value += data;
+			}
+		}
+		function consoleClear() {
+			iconsole.value = "";
+			line = 1;
+		}
+		editor.value = "print \"hello world\"";
+		run();
+	</script>
+</html>

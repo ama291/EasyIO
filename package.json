@@ -1,0 +1,9 @@
+{
+    "name": "EasyIO-Web-IDE",
+    "version": "0.0.0",
+    "description": "EasyIO is a new programming language constructed for beginners.",
+    "dependencies": {
+        "express": "latest"
+    },
+    "author": "Ama291"
+}
