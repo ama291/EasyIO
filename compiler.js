@@ -1,6 +1,6 @@
 //define some global stuff
 var code = ""; //code that goes in
-var compiledcode = "//Compiled into Javascript by EasyIO"; //code that comes out
+var compiledcode = "//Compiled into JavaScript by EasyIO"; //code that comes out
 var codebytes = []; //stores "bytes" of code, a list of the tokens
 var errorlist = [];
 
@@ -167,7 +167,7 @@ function errorhandle(errorlist) {
 //reset global variables
 function reset() {
 	code = "";
-	compiledcode = "";
+	compiledcode = "//Compiled into JavaScript by EasyIO";
 	codebytes = [];
 	errorlist = [];
 }
