@@ -44,7 +44,7 @@ function lex(code) {
 				tok = "";
 			}
 		}
-		else if (char === "+" || char === "-") {
+		else if (char === "+" || char === "-" || char === "*" || char === "/") {
 			if (state === false) {
 				if (tok === "") {
 					tok += char;
@@ -82,11 +82,19 @@ function typecheck(codebytes) {
 			var term1 = codebytes[i-1];
 			var term2 = codebytes[i+1];
 			if (!checkNum(term1) && !checkString(term1)) {
-				errorlist.push("operatorfail");
+				errorlist.push("addsubfail");
 				passed = false;
 			}
 			else if (!checkNum(term2) && !checkString(term2)) {
-				errorlist.push("operatorfail");
+				errorlist.push("addsubfail");
+				passed = false;
+			}
+		}
+		else if (byte === "*" || byte === "/") {
+			var term1 = codebytes[i-1];
+			var term2 = codebytes[i+1];
+			if (!checkNum(term1) || !checkNum(term2)) {
+				errorlist.push("multdivfail");
 				passed = false;
 			}
 		}
@@ -136,6 +144,16 @@ function solve(codebytes) {
 			codebytes.splice(i,i);
 			i -= 1;
 		}
+		else if (byte === "*") {
+			codebytes[i-1] *= codebytes[i+1];
+			codebytes.splice(i,i);
+			i -= 1;
+		}
+		else if (byte === "/") {
+			codebytes[i-1] /= codebytes[i+1];
+			codebytes.splice(i,i);
+			i -= 1;
+		}
 	}
 }
 //parser, converts "bytes" into actual javascript code
@@ -167,11 +185,14 @@ function errorhandle(errorlist) {
 			if (error === "parsefail") {
 				consolePrint("Parsing Failed: invalid command.");
 			}
-			else if (error === "operatorfail") {
+			else if (error === "addsubfail") {
 				consolePrint("TypeCheck Failed: you can only add/subtract variables.");
 			}
 			else if (error === "printfail") {
 				consolePrint("TypeCheck Failed: you can only print variables.");
+			}
+			else if (error === "multdivfail") {
+				consolePrint("TypeCheck Failed: you can only multiply/divide numbers.");
 			}
 		}
 	}
